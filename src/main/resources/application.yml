@@ -1,0 +1,16 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: medilaboGateway
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
