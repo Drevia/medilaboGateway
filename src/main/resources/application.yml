@@ -1,6 +1,10 @@
 server:
   port: 8090
 spring:
+  main:
+    web-application-type: reactive
+  autoconfigure:
+    exclude: org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration
   application:
     name: medilaboGateway
   cloud:

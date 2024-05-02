@@ -1,50 +1,41 @@
 package com.openclassrooms.medilaboGateway.config;
 
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
-
-import java.security.Key;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 public class SpringSecurityConfig {
 
-    private String jwtKey = "4261656C64756E67";
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity httpSecurity) {
         return httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(request -> request.anyRequest().permitAll())
-                .httpBasic(Customizer.withDefaults()).build();
-    }
-
-    //clé en base64 encoded
-    private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(this.jwtKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+                .authorizeExchange(exchange -> exchange.pathMatchers("/api/auth/**").permitAll())
+                .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
+                .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
+                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+                .build();
     }
 
     @Bean
-    public UserDetailsService users() {
+    public ReactiveUserDetailsService users() {
         UserDetails user =
                 User.builder().username("user").password(passwordEncoder().encode("password"))
                         .roles("ADMIN").build();
-        return new InMemoryUserDetailsManager(user);
+        return new MapReactiveUserDetailsService(user);
     }
 
     @Bean

@@ -1,45 +1,36 @@
 package com.openclassrooms.medilaboGateway.service;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.KeyGenerator;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
 
-    private String jwtSecret;
+    private static final String SECRET_KEY = "81358b4ae48d9c32168cb9f1d67243ef891dce2c766479084cef70aa5f173828";
 
-    @Value("${jwt.expirationMs}")
-    private int jwtExpirationMs;
-
-    @PostConstruct
-    public void generateSecretKey() throws NoSuchAlgorithmException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA512");
-        keyGenerator.init(512);
-        jwtSecret = keyGenerator.generateKey().toString();
+    private Key getSignInToken() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateToken(Authentication authentication) {
-        Key key = Keys.hmacShaKeyFor(new byte[512]);
         User userDetails = (User) authentication.getPrincipal();
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + jwtExpirationMs))
-                .signWith(key, SignatureAlgorithm.HS512 )
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .signWith(getSignInToken())
                 .compact();
+
+        return token;
     }
 }
