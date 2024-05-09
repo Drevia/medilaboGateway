@@ -36,6 +36,7 @@ logging:
       springframework:
         cloud:
           gateway: DEBUG
+        security: DEBUG
 
 jwt:
   expirationMs: "1000000"

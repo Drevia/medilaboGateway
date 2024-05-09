@@ -9,13 +9,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
 public class AuthController {
 
-    @Autowired
     private JwtService jwtService;
 
-    @PostMapping("/api/auth/login")
     public ResponseEntity<?> login(Authentication authentication) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         System.out.println(SecurityContextHolder.getContext());
