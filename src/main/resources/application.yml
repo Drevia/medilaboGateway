@@ -1,0 +1,42 @@
+server:
+  port: 8090
+spring:
+  main:
+    web-application-type: reactive
+  autoconfigure:
+    exclude: org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration
+  application:
+    name: medilaboGateway
+  cloud:
+    gateway:
+      routes:
+        - id: frontend
+          uri: http://localhost:8092
+          predicates:
+            - Path=/medilabo/**
+        - id: patientService
+          uri: http://localhost:8091
+          predicates:
+            - Path=/api/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: DEBUG
+        security: DEBUG
+
+jwt:
+  expirationMs: "1000000"
