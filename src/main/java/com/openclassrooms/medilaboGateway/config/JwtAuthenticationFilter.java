@@ -17,7 +17,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         return exchange.getPrincipal().map(principale -> exchange.mutate().request(request ->
-                request.header("Authorization", service.generateToken(principale))).build())
+                request.headers(headers -> headers.setBearerAuth(service.generateToken(principale)))).build())
                 .flatMap(chain::filter);
     }
 }
