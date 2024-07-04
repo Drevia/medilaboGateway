@@ -10,18 +10,14 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: frontend
-          uri: http://localhost:8092
-          predicates:
-            - Path=/medilabo/**
         - id: patientService
           uri: http://localhost:8091
           predicates:
-            - Path=/api/**
+            - Path=/api/patient/**
         - id: noteService
           uri: http://localhost:8093
           predicates:
-            - Path=/api/**
+            - Path=/api/note/**
 
 management:
   endpoints:

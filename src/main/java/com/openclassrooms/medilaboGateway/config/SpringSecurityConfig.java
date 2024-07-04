@@ -22,10 +22,8 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity httpSecurity) {
         return httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
-                .authorizeExchange(exchange -> exchange.pathMatchers("/api/auth/**").permitAll())
                 .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults())
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .build();
     }

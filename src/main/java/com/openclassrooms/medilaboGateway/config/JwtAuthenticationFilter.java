@@ -18,6 +18,6 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         return exchange.getPrincipal().map(principale -> exchange.mutate().request(request ->
                 request.headers(headers -> headers.setBearerAuth(service.generateToken(principale)))).build())
-                .flatMap(chain::filter);
+                .flatMap(chain::filter).doOnError(error -> System.out.println("------------ Error"));
     }
 }
