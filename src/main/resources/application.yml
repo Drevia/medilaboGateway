@@ -11,15 +11,15 @@ spring:
     gateway:
       routes:
         - id: patientService
-          uri: http://localhost:8091
+          uri: http://medilabo:8091
           predicates:
             - Path=/api/patient/**
         - id: noteService
-          uri: http://localhost:8093
+          uri: http://medilabo-note:8093
           predicates:
             - Path=/api/note/**
         - id: resultService
-          uri: http://localhost:8094
+          uri: http://medilabo-result:8094
           predicates:
             - Path=/api/result/**
 
